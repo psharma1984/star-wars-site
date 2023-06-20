@@ -27,6 +27,23 @@ async function fetchCharacterData() {
   }
 }
 
+async function fetchVehiclesData(){
+    try{
+        const response = await fetch(vehiclesApi_url);
+        const data = await response.json();
+        const vehichels = data.results;
+        const vehicleNames = [];
+
+        for (const vehicle of vehichels){
+            vehicleNames.push(vehicle.name);   
+        }
+        return vehicleNames;
+    } catch (error){
+        console.error("Error fetching data: ",error);
+        return [];
+    }
+}
+
 async function fetchSpeciesData(){
     try{
         const response = await fetch(speciesApi_url);
@@ -35,11 +52,7 @@ async function fetchSpeciesData(){
         const speciesNames = [];
 
         for ( const s of species){
-            const response = await fetch(s.url);
-            const data = await response.json();
-            const speciesProperties = data.result.properties;
-            const name = speciesProperties.name;
-            speciesNames.push(name);
+            speciesNames.push(s.name);
         }
         return speciesNames;
 
@@ -49,6 +62,39 @@ async function fetchSpeciesData(){
     }
 }
 
+async function fetchPlanetsData(){
+    try{
+        const response = await fetch(planetsApi_url);
+        const data = await response.json()
+        const planets = data.results;
+        const planetsNames = [];
+
+        for(const planet of planets){
+            planetsNames.push(planet.name);
+        }
+        return planetsNames;
+    } catch (error){
+        console.error("Error fetching data:", error);
+        return [];
+    }
+}
+
+async function fetchStarshipsData(){
+    try{
+        const response = await fetch(starshipsApi_url);
+        const data = await response.json();
+        const starships = data.results;
+        const startshipsNames = [];
+
+        for(const starship of starships){
+            startshipsNames.push(starship.name);
+        }
+        return startshipsNames;
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        return [];
+    }
+}
 async function fetchFilmData(){
     try{
         const response = await fetch(filmApi_url);    
@@ -101,10 +147,9 @@ async function fetchFilmData(){
     }
 }
 
-fetchSpeciesData();
-//fetchFilmData();
+fetchFilmData();
 
 function hideloader() {
     document.getElementById('loading').style.display = 'none';
 }
-//fetchCharacterData();
+
