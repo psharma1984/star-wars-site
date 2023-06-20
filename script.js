@@ -10,7 +10,6 @@ async function fetchCharacterData() {
     const response = await fetch(characterApi_url);
     const data = await response.json();
     const characters = data.results;
-    console.log(characters);
     let characterNames = [];
     const charactersContainer = document.getElementById("characters-container");
     charactersContainer.innerHTML = '';
