@@ -1,93 +1,110 @@
-const api_url = "https://www.swapi.tech/api/people";
+const characterApi_url = "https://www.swapi.tech/api/people";
+const filmApi_url = "https://www.swapi.tech/api/films";
+const speciesApi_url = "https://www.swapi.tech/api/species";
+const starshipsApi_url = "https://www.swapi.tech/api/starships";
+const vehiclesApi_url = "https://www.swapi.tech/api/vehicles";
+const planetsApi_url = "https://www.swapi.tech/api/planets";
 
 async function fetchCharacterData() {
   try {
-    const response = await fetch(api_url);
-    if (response) {
-        hideloader();
-    }
+    const response = await fetch(characterApi_url);
     const data = await response.json();
     const characters = data.results;
-    console.log(characters);
-
-    let tab = `
-      <tr>
-        <th>Name</th>
-        <th>Gender</th>
-        <th>Birth Year</th>
-        <th>HomeWorld</th>
-      </tr>`;
-
-    const characterPromises = characters.map(async (character) => {
-      const characterUrl = character.url;
-      const characterResponse = await fetch(characterUrl);
-      const characterData = await characterResponse.json();
-      const characterProperties = characterData.result.properties;
-      console.log(characterProperties);
-      //console.log(characterData);
-      const name = characterProperties.name;
-      const gender = characterProperties.gender;
-      const birthYear = characterProperties.birth_year;
-      const homeworldUrl = characterProperties.homeworld;
-
+    let characterNames = [];
     
-     /* if (filmsUrls.length > 0){
-        const filmPromises = filmsUrls.map(async (film) => {
-        const filmUrl = film.films
-        const filmResponse = await fetch(filmUrl);
-        const filmData = await filmResponse.json();
-        console.log(filmData);
-        return filmData.result.properties.title;
-      });
-    }
-
-      const speciesUrls = characterData.result.properties.species;
-      const speciesPromises = speciesUrls.map(async (speciesUrl) => {
-        const speciesResponse = await fetch(speciesUrl);
-        const speciesData = await speciesResponse.json();
-        return speciesData.result.properties.name;
-      });
-
-      const filmTitles = await Promise.all(filmPromises);
-      const speciesNames = await Promise.all(speciesPromises); */
-
-      const homeworldResponse = await fetch(homeworldUrl);
-      const homeworldData = await homeworldResponse.json();
-      const homeworld = homeworldData.result.properties.name;
-
-      return {
-        name,
-        gender,
-        birthYear,
-        homeworld,
-      };
-    });
-
-    const characterData = await Promise.all(characterPromises);
-
-    for (let character of characterData) {
-      const name = character.name;
-      const gender = character.gender;
-      const birthYear = character.birthYear;
-      const homeworld = character.homeworld;
-
-      tab += `
-        <tr>
-          <td>${name}</td>
-          <td>${gender}</td>
-          <td>${birthYear}</td>
-          <td>${homeworld}</td>
-        </tr>`;
-    }
-
-    const tableBody = document.getElementById("characters");
-    tableBody.innerHTML = tab;
+    for (const character of characters) {
+        const characterUrl = character.url;
+        const characterResponse = await fetch(characterUrl);
+        const characterData = await characterResponse.json();
+        const characterProperties = characterData.result.properties;
+        const name = characterProperties.name;
+        characterNames.push(name);
+      }  
+      return characterNames;
   } catch (error) {
     console.error("Error fetching data:", error);
+    return [];
   }
 }
+
+async function fetchSpeciesData(){
+    try{
+        const response = await fetch(speciesApi_url);
+        const data = await response.json();
+        const species = data.results;
+        const speciesNames = [];
+
+        for ( const s of species){
+            const response = await fetch(s.url);
+            const data = await response.json();
+            const speciesProperties = data.result.properties;
+            const name = speciesProperties.name;
+            speciesNames.push(name);
+        }
+        return speciesNames;
+
+    } catch (error){
+        console.error("Error fetching data:", error);
+        return [];
+    }
+}
+
+async function fetchFilmData(){
+    try{
+        const response = await fetch(filmApi_url);    
+        const data = await response.json();
+        const films = data.result;
+        console.log(films);
+
+        let tab = `
+        <tr>
+          <th>Title</th>
+          <th>Director</th>
+          <th>Opening Crawl</th>
+          <th>Characters</th>
+          <th>Planets</th>
+          <th>Starships</th>
+          <th>Vehicles</th>
+          <th>Species</th>
+        </tr>`;
+
+        for (const f of films){
+            const title = f.properties.title;
+            const director = f.properties.director;
+            const opening = f.properties.opening_crawl;
+            const characters = f.properties.characters;
+            const planets = f.properties.planets;
+            const starships = f.properties.starships;
+            const vehicles = f.properties.vehicles;
+            const species = f.properties.species;
+
+            const characterData = await fetchCharacterData(characters); 
+            const speciesData = await fetchSpeciesData(species);     
+            const vehiclesData = await fetchVehiclesData(vehicles);
+            const planetsData = await fetchPlanetsData(planets);
+            const starshipsData = await fetchStarshipsData(starships);
+
+            console.log("Film Title:", title);
+            console.log("Director:", director);
+            console.log("Opening Crawl:", opening);
+            console.log("Characters:", characterData);
+            console.log("Species:", speciesData);
+            console.log("Planets:", planetsData);
+            console.log("Starships:", starshipsData);
+            console.log("Vehicles:", vehiclesData);
+            console.log("-------------------");
+
+        }  
+    }
+    catch (error){
+        console.error("Error fetching data:", error);
+    }
+}
+
+fetchSpeciesData();
+//fetchFilmData();
 
 function hideloader() {
     document.getElementById('loading').style.display = 'none';
 }
-fetchCharacterData();
+//fetchCharacterData();
