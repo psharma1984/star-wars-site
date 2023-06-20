@@ -12,20 +12,19 @@
         <div class="container">
             <nav class="navbar bg-body-tertiary" data-bs-theme="dark">
                 <a class="navbar-brand" href="#" onclick="fetchCharacterData()">Characters</a>   
-                <a class="navbar-brand" href="#">Species</a>        
-                <a class="navbar-brand" href="movies.html">Movies</a>
-                <a class="navbar-brand" href="#">Planets</a> 
-                <a class="navbar-brand" href="#">StarShips</a> 
-                <a class="navbar-brand" href="#">Vehicles</a>                                    
+                <a class="navbar-brand" href="#" onclick="fetchSpeciesData()">Species</a>        
+                <a class="navbar-brand" href="#" onclick="fetchPlanetsData()">Planets</a> 
+                <a class="navbar-brand" href="#" onclick="fetchStarshipsData()">StarShips</a> 
+                <a class="navbar-brand" href="#" onclick="fetchVehiclesData()">Vehicles</a>                                    
             </nav>
         </div>
         </header>
-        <div class="d-flex justify-content-center">
+        <!--<div class="d-flex justify-content-center">
             <div class="spinner-border"
             role="status" id="loading">
                 <span class="sr-only"><h2>... </h2></span>
             </div>
-        </div>
+        </div> -->
         <main>
             <div class="characters-container" id="characters-container"></div>
         </main>

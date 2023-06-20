@@ -31,9 +31,9 @@ async function fetchCharacterData() {
         <p><b>Mass: ${characterProperties.mass}</b></p>
         <p><b>Hair Color: ${characterProperties.hair_color}</b></p>
         <p><b>Skin Color: ${characterProperties.skin_color}</b></p>
-      `;
+        `;
 
-      charactersContainer.appendChild(characterBlock);
+        charactersContainer.appendChild(characterBlock);
       }  
       return characterNames;
   } catch (error) {
@@ -47,10 +47,28 @@ async function fetchVehiclesData(){
         const response = await fetch(vehiclesApi_url);
         const data = await response.json();
         const vehichels = data.results;
+        const charactersContainer = document.getElementById("characters-container");
+        charactersContainer.innerHTML = '';
         const vehicleNames = [];
 
         for (const vehicle of vehichels){
-            vehicleNames.push(vehicle.name);   
+            const vehicleUrl = vehicle.url;
+            const vehicleResponse = await fetch(vehicleUrl);
+            const vehicleData = await vehicleResponse.json();
+            const vehicleProperties = vehicleData.result.properties;
+            const name = vehicleProperties.name;
+            vehicleNames.push(name);   
+            const characterBlock = document.createElement("div");
+            characterBlock.classList.add("character-block");
+            characterBlock.innerHTML = `
+            <h2>${name}</h2>
+            <p><b>Model: ${vehicleProperties.model}</b></p>
+            <p><b>Passengers: ${vehicleProperties.passengers}</b></p>
+            <p><b>Max-speed: ${vehicleProperties.max_atmosphering_speed}</b></p>
+            <p><b>Class: ${vehicleProperties.vehicle_class}</b></p>
+            `;
+
+            charactersContainer.appendChild(characterBlock);
         }
         return vehicleNames;
     } catch (error){
@@ -64,10 +82,29 @@ async function fetchSpeciesData(){
         const response = await fetch(speciesApi_url);
         const data = await response.json();
         const species = data.results;
+        const charactersContainer = document.getElementById("characters-container");
+        charactersContainer.innerHTML = '';
         const speciesNames = [];
 
         for ( const s of species){
-            speciesNames.push(s.name);
+            const speciesUrl = s.url;
+            const speciesResponse = await fetch(speciesUrl);
+            const speciesData = await speciesResponse.json();
+            const speciesProperties = speciesData.result.properties;
+            const name = speciesProperties.name;
+
+            speciesNames.push(name);
+            const characterBlock = document.createElement("div");
+            characterBlock.classList.add("character-block");
+            characterBlock.innerHTML = `
+            <h2>${name}</h2>
+            <p><b>Classification: ${speciesProperties.classification}</b></p>
+            <p><b>Language: ${speciesProperties.language}</b></p>
+            <p><b>Hair Colors: ${speciesProperties.hair_color}s</b></p>
+            <p><b>Height: ${speciesProperties.height}</b></p>
+            `;
+
+            charactersContainer.appendChild(characterBlock);
         }
         return speciesNames;
 
@@ -82,10 +119,28 @@ async function fetchPlanetsData(){
         const response = await fetch(planetsApi_url);
         const data = await response.json()
         const planets = data.results;
+        const charactersContainer = document.getElementById("characters-container");
+        charactersContainer.innerHTML = '';
         const planetsNames = [];
 
         for(const planet of planets){
-            planetsNames.push(planet.name);
+            const planetUrl = planet.url;
+            const planetResponse = await fetch(planetUrl);
+            const planetData = await planetResponse.json();
+            const planetProperties = planetData.result.properties;
+            const name = planetProperties.name;
+            const characterBlock = document.createElement("div");
+            characterBlock.classList.add("character-block");
+            characterBlock.innerHTML = `
+            <h2>${name}</h2>
+            <p><b>Population: ${planetProperties.population}</b></p>
+            <p><b>Climate: ${planetProperties.climate}</b></p>
+            <p><b>Terrain: ${planetProperties.terrain}</b></p>
+            <p><b>Day length(hrs): ${planetProperties.rotation_period}</b></p>
+            `;
+
+            charactersContainer.appendChild(characterBlock);
+            planetsNames.push(name);
         }
         return planetsNames;
     } catch (error){
@@ -99,10 +154,28 @@ async function fetchStarshipsData(){
         const response = await fetch(starshipsApi_url);
         const data = await response.json();
         const starships = data.results;
+        const charactersContainer = document.getElementById("characters-container");
+        charactersContainer.innerHTML = '';
         const startshipsNames = [];
 
         for(const starship of starships){
-            startshipsNames.push(starship.name);
+            const starshipUrl = starship.url;
+            const starshipResponse = await fetch(starshipUrl);
+            const starshipData = await starshipResponse.json();
+            const starshipProperties = starshipData.result.properties;
+            const name = starshipProperties.name;
+            startshipsNames.push(name);
+            const characterBlock = document.createElement("div");
+            characterBlock.classList.add("character-block");
+            characterBlock.innerHTML = `
+            <h2>${name}</h2>
+            <p><b>Model: ${starshipProperties.model}</b></p>
+            <p><b>Class: ${starshipProperties.starship_class}</b></p>
+            <p><b>Cost in credits: ${starshipProperties.cost_in_credits}</b></p>
+            <p><b>Passengers: ${starshipProperties.passengers}</b></p>
+        `;
+
+            charactersContainer.appendChild(characterBlock);
         }
         return startshipsNames;
     } catch (error) {
@@ -113,29 +186,15 @@ async function fetchStarshipsData(){
 async function fetchFilmData(){
     try{
         const response = await fetch(filmApi_url);   
-        if(response){
-            hideloader();
-        } 
         const data = await response.json();
         const films = data.result;
-        console.log(films);
-
-        let tab = `
-        <tr>
-          <th>Title</th>
-          <th>Director</th>
-          <th>Opening Crawl</th>
-          <th>Characters</th>
-          <th>Species</th>
-          <th>Vehicles</th>
-          <th>Starships</th>
-          <th>Planets</th>        
-         </tr>`;
+        //console.log(films);
+        const charactersContainer = document.getElementById("characters-container");
+        charactersContainer.innerHTML = '';       
 
         for (const f of films){
             const title = f.properties.title;
             const director = f.properties.director;
-            const opening = f.properties.opening_crawl;
             const characters = f.properties.characters;
             const planets = f.properties.planets;
             const starships = f.properties.starships;
@@ -148,16 +207,16 @@ async function fetchFilmData(){
             const planetsData = await fetchPlanetsData(planets);
             const starshipsData = await fetchStarshipsData(starships);
 
-            tab += `<tr>
-            <td>${title}</td>
-            <td>${director}</td>
-            <td>${opening}</td>
-            <td>${characterData}</td>
-            <td>${speciesData}</td>
-            <td>${vehiclesData}</td>
-            <td>${starshipsData}</td>
-            <td>${planetsData}</td>           
-            </tr>`;
+            const characterBlock = document.createElement("div");
+            characterBlock.classList.add("character-block");
+
+            characterBlock.innerHTML = `
+            <h2>${title}</h2>
+            <p><b>Director : ${director}</b></p>
+            <p><b>${characterData}</b></p>
+            <p><b>${speciesData}</b></p>
+            <p><b>${vehiclesData}</b></p>
+            `;
             /*console.log("Film Title:", title);
             console.log("Director:", director);
             console.log("Opening Crawl:", opening);
@@ -167,15 +226,14 @@ async function fetchFilmData(){
             console.log("Starships:", starshipsData);
             console.log("Vehicles:", vehiclesData);
             console.log("-------------------"); */
+            charactersContainer.appendChild(characterBlock);
         }  
-        document.getElementById("movies").innerHTML = tab;
     }
     catch (error){
         console.error("Error fetching data:", error);
     }
 }
 
-fetchFilmData();
 
 function hideloader() {
     document.getElementById('loading').style.display = 'none';
