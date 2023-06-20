@@ -10,15 +10,31 @@ async function fetchCharacterData() {
     const response = await fetch(characterApi_url);
     const data = await response.json();
     const characters = data.results;
+    console.log(characters);
     let characterNames = [];
-    
+    const charactersContainer = document.getElementById("characters-container");
+    charactersContainer.innerHTML = '';
+
     for (const character of characters) {
+        const characterBlock = document.createElement("div");
+        
         const characterUrl = character.url;
         const characterResponse = await fetch(characterUrl);
         const characterData = await characterResponse.json();
         const characterProperties = characterData.result.properties;
         const name = characterProperties.name;
         characterNames.push(name);
+
+        characterBlock.classList.add("character-block");
+        characterBlock.innerHTML = `
+        <h2>${name}</h2>
+        <p><b>Height: ${characterProperties.height}</b></p>
+        <p><b>Mass: ${characterProperties.mass}</b></p>
+        <p><b>Hair Color: ${characterProperties.hair_color}</b></p>
+        <p><b>Skin Color: ${characterProperties.skin_color}</b></p>
+      `;
+
+      charactersContainer.appendChild(characterBlock);
       }  
       return characterNames;
   } catch (error) {
@@ -97,7 +113,10 @@ async function fetchStarshipsData(){
 }
 async function fetchFilmData(){
     try{
-        const response = await fetch(filmApi_url);    
+        const response = await fetch(filmApi_url);   
+        if(response){
+            hideloader();
+        } 
         const data = await response.json();
         const films = data.result;
         console.log(films);
@@ -108,11 +127,11 @@ async function fetchFilmData(){
           <th>Director</th>
           <th>Opening Crawl</th>
           <th>Characters</th>
-          <th>Planets</th>
-          <th>Starships</th>
-          <th>Vehicles</th>
           <th>Species</th>
-        </tr>`;
+          <th>Vehicles</th>
+          <th>Starships</th>
+          <th>Planets</th>        
+         </tr>`;
 
         for (const f of films){
             const title = f.properties.title;
@@ -130,7 +149,17 @@ async function fetchFilmData(){
             const planetsData = await fetchPlanetsData(planets);
             const starshipsData = await fetchStarshipsData(starships);
 
-            console.log("Film Title:", title);
+            tab += `<tr>
+            <td>${title}</td>
+            <td>${director}</td>
+            <td>${opening}</td>
+            <td>${characterData}</td>
+            <td>${speciesData}</td>
+            <td>${vehiclesData}</td>
+            <td>${starshipsData}</td>
+            <td>${planetsData}</td>           
+            </tr>`;
+            /*console.log("Film Title:", title);
             console.log("Director:", director);
             console.log("Opening Crawl:", opening);
             console.log("Characters:", characterData);
@@ -138,9 +167,9 @@ async function fetchFilmData(){
             console.log("Planets:", planetsData);
             console.log("Starships:", starshipsData);
             console.log("Vehicles:", vehiclesData);
-            console.log("-------------------");
-
+            console.log("-------------------"); */
         }  
+        document.getElementById("movies").innerHTML = tab;
     }
     catch (error){
         console.error("Error fetching data:", error);
