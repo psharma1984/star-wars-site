@@ -14,9 +14,7 @@ async function fetchCharacterData() {
     const charactersContainer = document.getElementById("characters-container");
     charactersContainer.innerHTML = '';
 
-    for (const character of characters) {
-        const characterBlock = document.createElement("div");
-        
+    const characterDataPromises = characters.map(async (character) => {
         const characterUrl = character.url;
         const characterResponse = await fetch(characterUrl);
         const characterData = await characterResponse.json();
@@ -24,6 +22,7 @@ async function fetchCharacterData() {
         const name = characterProperties.name;
         characterNames.push(name);
 
+        const characterBlock = document.createElement("div");
         characterBlock.classList.add("character-block");
         characterBlock.innerHTML = `
         <h2>${name}</h2>
@@ -34,7 +33,8 @@ async function fetchCharacterData() {
         `;
 
         charactersContainer.appendChild(characterBlock);
-      }  
+      });
+      await Promise.all(characterDataPromises);
       return characterNames;
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -46,12 +46,12 @@ async function fetchVehiclesData(){
     try{
         const response = await fetch(vehiclesApi_url);
         const data = await response.json();
-        const vehichels = data.results;
+        const vehicles = data.results;
         const charactersContainer = document.getElementById("characters-container");
         charactersContainer.innerHTML = '';
         const vehicleNames = [];
 
-        for (const vehicle of vehichels){
+        const vehicleDataPromises = vehicles.map(async (vehicle) => {
             const vehicleUrl = vehicle.url;
             const vehicleResponse = await fetch(vehicleUrl);
             const vehicleData = await vehicleResponse.json();
@@ -69,7 +69,8 @@ async function fetchVehiclesData(){
             `;
 
             charactersContainer.appendChild(characterBlock);
-        }
+        });
+        await Promise.all(vehicleDataPromises);
         return vehicleNames;
     } catch (error){
         console.error("Error fetching data: ",error);
@@ -86,8 +87,8 @@ async function fetchSpeciesData(){
         charactersContainer.innerHTML = '';
         const speciesNames = [];
 
-        for ( const s of species){
-            const speciesUrl = s.url;
+        const speciesDataPromises = species.map(async (specie) => {
+            const speciesUrl = specie.url;
             const speciesResponse = await fetch(speciesUrl);
             const speciesData = await speciesResponse.json();
             const speciesProperties = speciesData.result.properties;
@@ -105,7 +106,8 @@ async function fetchSpeciesData(){
             `;
 
             charactersContainer.appendChild(characterBlock);
-        }
+        });
+        await Promise.all(speciesDataPromises);
         return speciesNames;
 
     } catch (error){
@@ -123,7 +125,7 @@ async function fetchPlanetsData(){
         charactersContainer.innerHTML = '';
         const planetsNames = [];
 
-        for(const planet of planets){
+        const planetDataPromises = planets.map(async (planet) => {
             const planetUrl = planet.url;
             const planetResponse = await fetch(planetUrl);
             const planetData = await planetResponse.json();
@@ -141,7 +143,8 @@ async function fetchPlanetsData(){
 
             charactersContainer.appendChild(characterBlock);
             planetsNames.push(name);
-        }
+        });
+        await Promise.all(planetDataPromises);
         return planetsNames;
     } catch (error){
         console.error("Error fetching data:", error);
@@ -158,7 +161,7 @@ async function fetchStarshipsData(){
         charactersContainer.innerHTML = '';
         const startshipsNames = [];
 
-        for(const starship of starships){
+        const starshipDataPromises = starships.map(async (starship) => {
             const starshipUrl = starship.url;
             const starshipResponse = await fetch(starshipUrl);
             const starshipData = await starshipResponse.json();
@@ -176,7 +179,8 @@ async function fetchStarshipsData(){
         `;
 
             charactersContainer.appendChild(characterBlock);
-        }
+        });
+        await Promise.all(starshipDataPromises);
         return startshipsNames;
     } catch (error) {
         console.error("Error fetching data:", error);
@@ -186,9 +190,12 @@ async function fetchStarshipsData(){
 async function fetchFilmData(){
     try{
         const response = await fetch(filmApi_url);   
+        if(response){
+            hideloader();
+        } 
         const data = await response.json();
         const films = data.result;
-        //console.log(films);
+        console.log(films);
         const charactersContainer = document.getElementById("characters-container");
         charactersContainer.innerHTML = '';       
 
