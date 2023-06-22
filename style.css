@@ -28,7 +28,21 @@ html,body{
     border-radius: 5%;
     background-color: rgb(24, 23, 23, 0.9);
 }
-
+.character-block:hover {
+    background-color: grey;
+    cursor: pointer;
+}  
+.display-block{
+    flex-basis: calc(25% - 10px);
+    box-sizing: border-box;
+    padding: 10px;
+    border: 1px solid black;
+    text-align: justify;
+    color: white;
+    margin:5px;
+    border-radius: 5%;
+    background-color: rgb(24, 23, 23, 0.9);
+}
 main {
     flex: 1 0 auto;
   }
