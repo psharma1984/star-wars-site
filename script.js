@@ -5,259 +5,169 @@ const starshipsApi_url = "https://www.swapi.tech/api/starships";
 const vehiclesApi_url = "https://www.swapi.tech/api/vehicles";
 const planetsApi_url = "https://www.swapi.tech/api/planets";
 
-async function fetchCharacterData() {
-  try {
-    const response = await fetch(characterApi_url);
-    const data = await response.json();
-    const characters = data.results;
-    let characterNames = [];
-    
-    const charactersContainer = document.getElementById("characters-container");
-    charactersContainer.innerHTML = '';
-
-    const headingContainer = document.getElementById("heading-container");
-    headingContainer.innerHTML = '';
-
-    const characterDataPromises = characters.map(async (character) => {
+async function fetchCharacters() {
+    try {
+      const response = await fetch(characterApi_url);
+      const data = await response.json();
+      const characters = data.results;
+      let characterNames = [];
+  
+      const charactersContainer = document.getElementById("characters-container");
+      charactersContainer.innerHTML = '';
+  
+      const headingContainer = document.getElementById("heading-container");
+      headingContainer.innerHTML = '';
+  
+      const characterDataPromises = characters.map(async (character) => {
         const characterUrl = character.url;
         const characterUid = character.uid;
+  
         const characterResponse = await fetch(characterUrl);
         const characterData = await characterResponse.json();
-        
+  
         const characterProperties = characterData.result.properties;
         const name = characterProperties.name;
         characterNames.push(name);
+  
+        const characterBlock = document.createElement("div");
+        characterBlock.classList.add("character-block");
+  
+        const imageContainer = document.createElement("div");
+        imageContainer.classList.add("image-container");
+  
+        const characterImage = document.createElement("img");
+        characterImage.src = `photos/${characterUid}.jpeg`;
+        imageContainer.appendChild(characterImage);
+
+
+        const characterName = document.createElement("h2");
+        characterName.innerHTML = `<h2 style="text-align:center">${name}</h2>`;
+  
+        characterBlock.appendChild(imageContainer);
+        characterBlock.appendChild(characterName);
+  
+        charactersContainer.appendChild(characterBlock);
+
+        characterBlock.addEventListener("click", () => {
+            displayCharacterInfo(characterUid,name);
+        }); 
+        
+      });
+  
+      await Promise.all(characterDataPromises);
+      return characterNames;
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+      return [];
+    }
+  }
+  
+  async function displayCharacterInfo(characterUid, name) {
+    try {
+
+        const characterResponse = await fetch(`${characterApi_url}/${characterUid}`);
+        const characterData = await characterResponse.json();
+        const character = characterData.result;
+
+        const filmResponse = await fetch(filmApi_url);
+        const filmData = await filmResponse.json();
+        const films = filmData.result;
+
+        const headingContainer = document.getElementById("heading-container");
+        headingContainer.innerHTML = `<h1 style="text-align: center">${name.toUpperCase()}</h1>`;
+     
+        const characterContainer = document.getElementById("characters-container");
+        characterContainer.innerHTML = ""; 
 
         const characterBlock = document.createElement("div");
         characterBlock.classList.add("character-block");
-        characterBlock.innerHTML = `
-        <h2>${name}</h2>
-        <p><b>Height: ${characterProperties.height}</b></p>
-        <p><b>Mass: ${characterProperties.mass}</b></p>
-        <p><b>Hair Color: ${characterProperties.hair_color}</b></p>
-        <p><b>Skin Color: ${characterProperties.skin_color}</b></p>
+
+        const imageContainer = document.createElement("div");
+        imageContainer.classList.add("image-container");
+
+        const characterImage = document.createElement("img");
+        characterImage.src = `photos/${characterUid}.jpeg`;
+        imageContainer.appendChild(characterImage);
+        characterBlock.appendChild(imageContainer)
+
+        const characterInfo = document.createElement("div");
+        characterInfo.innerHTML = `
+        <p>Birth Year : ${character.properties.birth_year}</p>
+        <p>Height : ${character.properties.height}m</p>
+        <p>Weight : ${character.properties.mass} kg</p>
+        <p>Gender : ${character.properties.gender}</p>
+        <p>Hair Color : ${character.properties.hair_color}</p>
+        <p>Skin Color : ${character.properties.skin_color}</p>
+        <p>Eye Color : ${character.properties.eye_color}</p>
         `;
-        characterBlock.addEventListener("click", () => {
-            displayFilms(characterUid,name);
-        });
+        characterBlock.appendChild(characterInfo);
+        characterContainer.appendChild(characterBlock);
 
-        charactersContainer.appendChild(characterBlock);
-      });
-      await Promise.all(characterDataPromises);
-      return characterNames;
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    return [];
-  }
-}
+        const filmElement = document.createElement("div");
+        filmElement.classList.add("display-block");
 
+        const filmHeading = document.createElement("h2");
+        filmHeading.textContent= "FILMOGRAPHY";
+        filmElement.appendChild(filmHeading); 
 
-async function displayFilms(characterUid, name) {
-    try {
-      const response = await fetch(filmApi_url);
-      const data = await response.json();
-      const films = data.result;
+        const filmInformation = document.createElement("div");
+        filmInformation.classList.add("characters-container");
 
-      const headingContainer = document.getElementById("heading-container");
-      headingContainer.innerHTML = `<h2 style="text-align: center"><b>${name} Filmography</b></h2>`;
-     
-      const filmsContainer = document.getElementById("characters-container");
-      filmsContainer.innerHTML = "";
+        for (const film of films) {
+            const characters = film.properties.characters;
+            const title = film.properties.title;
 
-      for (const film of films) {
-        const characters = film.properties.characters;
-        const title = film.properties.title;
-        const director = film.properties.director;
-        const episode = film.properties.episode_id;
-        const releaseDate = film.properties.release_date;
+            const filmTitles = document.createElement("div");
+            filmTitles.classList.add("film-container");
 
-        if(characters.includes(characterApi_url + `/${characterUid}`)) {
-
-            const filmElement = document.createElement("div");
-            filmElement.classList.add("display-block");
-            filmElement.innerHTML =`
-            <h2><u>${title}</u></h2>
-            <p><b>Release Date : ${releaseDate}</b></p>
-            <p><b>Director : ${director}</b></p>
-            <p><b>Episode ID : ${episode}</b></p>
-            `;            
-            filmsContainer.appendChild(filmElement);
+            if(characters.includes(characterApi_url + `/${characterUid}`)) {
+                const filmPoster = document.createElement("div");
+                filmPoster.classList.add("image-container");
+                const poster = document.createElement("img");
+                poster.src = `movies/${title}.jpeg`;
+                filmPoster.appendChild(poster);
+                const filmTitle = document.createElement("h4");
+                filmTitle.innerHTML = `${title}`;
+                filmTitles.appendChild(filmPoster);
+                filmTitles.appendChild(filmTitle);            
             }   
+            filmInformation.appendChild(filmTitles);
         }
+        filmElement.appendChild(filmInformation);
+        characterContainer.appendChild(filmElement);
+        
     } catch (error) {
       console.error("Error fetching film data:", error);
     }
   }
 
 
-async function fetchVehiclesData(){
+async function displayCharacters(title){
     try{
-        const response = await fetch(vehiclesApi_url);
+        const response = await fetch(`${filmApi_url}?title=${encodeURIComponent(title)}`);
         const data = await response.json();
-        const vehicles = data.results;
-        
-        const headingContainer = document.getElementById("heading-container");
-        headingContainer.innerHTML = '';
+        const films = data.result;
+        if (films.length > 0){
+            //film found
+            const film = films[0];
+            const title = film.properties.title;
+            const director = film.properties.director;
+            const releaseDate = film.properties.release_date;
+            const characters = film.properties.characters;
 
-        const vehiclesContainer = document.getElementById("characters-container");
-        vehiclesContainer.innerHTML = '';
-        const vehicleNames = [];
+            //const characterData = await fetchCharacterData(characters); 
 
-        const vehicleDataPromises = vehicles.map(async (vehicle) => {
-            const vehicleUrl = vehicle.url;
-            const vehicleResponse = await fetch(vehicleUrl);
-            const vehicleData = await vehicleResponse.json();
-            
-            const vehicleProperties = vehicleData.result.properties;
-            const name = vehicleProperties.name;
-            vehicleNames.push(name);   
-            
-            const vehicleBlock = document.createElement("div");
-            vehicleBlock.classList.add("display-block");
-            vehicleBlock.innerHTML = `
-            <h2>${name}</h2>
-            <p><b>Model: ${vehicleProperties.model}</b></p>
-            <p><b>Passengers: ${vehicleProperties.passengers}</b></p>
-            <p><b>Max-speed: ${vehicleProperties.max_atmosphering_speed}</b></p>
-            <p><b>Class: ${vehicleProperties.vehicle_class}</b></p>
-            `;
 
-            vehiclesContainer.appendChild(vehicleBlock);
-        });
-        await Promise.all(vehicleDataPromises);
-        return vehicleNames;
-    } catch (error){
-        console.error("Error fetching data: ",error);
-        return [];
+
+
+
+        }
+    }catch (error) {
+        console.error("Error fetching film data:", error);
     }
 }
 
-async function fetchSpeciesData(){
-    try{
-        const response = await fetch(speciesApi_url);
-        const data = await response.json();
-        const species = data.results;
-        
-        const headingContainer = document.getElementById("heading-container");
-        headingContainer.innerHTML = '';
 
-        const speciesContainer = document.getElementById("characters-container");
-        speciesContainer.innerHTML = '';
-        const speciesNames = [];
-
-        const speciesDataPromises = species.map(async (specie) => {
-            const speciesUrl = specie.url;
-            const speciesResponse = await fetch(speciesUrl);
-            const speciesData = await speciesResponse.json();
-            
-            const speciesProperties = speciesData.result.properties;
-            const name = speciesProperties.name;
-            speciesNames.push(name);
-
-            const speciesBlock = document.createElement("div");
-            speciesBlock.classList.add("display-block");
-            speciesBlock.innerHTML = `
-            <h2>${name}</h2>
-            <p><b>Classification: ${speciesProperties.classification}</b></p>
-            <p><b>Language: ${speciesProperties.language}</b></p>
-            <p><b>Hair Colors: ${speciesProperties.hair_color}s</b></p>
-            <p><b>Height: ${speciesProperties.height}</b></p>
-            `;
-
-            speciesContainer.appendChild(speciesBlock);
-        });
-        await Promise.all(speciesDataPromises);
-        return speciesNames;
-
-    } catch (error){
-        console.error("Error fetching data:", error);
-        return [];
-    }
-}
-
-async function fetchPlanetsData(){
-    try{
-        const response = await fetch(planetsApi_url);
-        const data = await response.json()
-        const planets = data.results;
-
-        const headingContainer = document.getElementById("heading-container");
-        headingContainer.innerHTML = '';
-        
-        const planetsContainer = document.getElementById("characters-container");
-        planetsContainer.innerHTML = '';
-        const planetsNames = [];
-
-        const planetDataPromises = planets.map(async (planet) => {
-            const planetUrl = planet.url;
-            const planetResponse = await fetch(planetUrl);
-            const planetData = await planetResponse.json();
-            
-            const planetProperties = planetData.result.properties;
-            const name = planetProperties.name;
-            
-            const planetBlock = document.createElement("div");
-            planetBlock.classList.add("display-block");
-            planetBlock.innerHTML = `
-            <h2>${name}</h2>
-            <p><b>Population: ${planetProperties.population}</b></p>
-            <p><b>Climate: ${planetProperties.climate}</b></p>
-            <p><b>Terrain: ${planetProperties.terrain}</b></p>
-            <p><b>Day length(hrs): ${planetProperties.rotation_period}</b></p>
-            `;
-
-            planetsContainer.appendChild(planetBlock);
-            planetsNames.push(name);
-        });
-        await Promise.all(planetDataPromises);
-        return planetsNames;
-    } catch (error){
-        console.error("Error fetching data:", error);
-        return [];
-    }
-}
-
-async function fetchStarshipsData(){
-    try{
-        const response = await fetch(starshipsApi_url);
-        const data = await response.json();
-        const starships = data.results;
-
-        const headingContainer = document.getElementById("heading-container");
-        headingContainer.innerHTML = '';
-                
-        const starshipsContainer = document.getElementById("characters-container");
-        starshipsContainer.innerHTML = '';
-        const startshipsNames = [];
-
-        const starshipDataPromises = starships.map(async (starship) => {
-            const starshipUrl = starship.url;
-            const starshipResponse = await fetch(starshipUrl);
-            const starshipData = await starshipResponse.json();
-            
-            const starshipProperties = starshipData.result.properties;
-            const name = starshipProperties.name;
-            startshipsNames.push(name);
-            
-            const starshipBlock = document.createElement("div");
-            starshipBlock.classList.add("display-block");
-            starshipBlock.innerHTML = `
-            <h2>${name}</h2>
-            <p><b>Model: ${starshipProperties.model}</b></p>
-            <p><b>Class: ${starshipProperties.starship_class}</b></p>
-            <p><b>Cost in credits: ${starshipProperties.cost_in_credits}</b></p>
-            <p><b>Passengers: ${starshipProperties.passengers}</b></p>
-        `;
-
-            starshipsContainer.appendChild(starshipBlock);
-        });
-        await Promise.all(starshipDataPromises);
-        return startshipsNames;
-    } catch (error) {
-        console.error("Error fetching data:", error);
-        return [];
-    }
-}
 /*--- Function to fetch film data for later use sometime.....
 async function fetchFilmData(){
     try{
