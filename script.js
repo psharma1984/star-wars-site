@@ -168,12 +168,13 @@ async function displayCharacters(title){
 }
 
 
-/*--- Function to fetch film data for later use sometime.....
-async function fetchFilmData(){
+// Function to fetch movies.....
+async function fetchMovies(){
     try{
         const response = await fetch(filmApi_url);   
         const data = await response.json();
         const films = data.result;
+        const filmUid = films.Uid;
 
         const headingContainer = document.getElementById("heading-container");
         headingContainer.innerHTML = '';        
@@ -183,43 +184,41 @@ async function fetchFilmData(){
 
         for (const f of films){
             const title = f.properties.title;
-            const director = f.properties.director;
-            const characters = f.properties.characters;
-            const planets = f.properties.planets;
-            const starships = f.properties.starships;
-            const vehicles = f.properties.vehicles;
-            const species = f.properties.species;
-
-            const characterData = await fetchCharacterData(characters); 
-            const speciesData = await fetchSpeciesData(species);     
-            const vehiclesData = await fetchVehiclesData(vehicles);
-            const planetsData = await fetchPlanetsData(planets);
-            const starshipsData = await fetchStarshipsData(starships);
-
+           
             const filmBlock = document.createElement("div");
-            filmBlock.classList.add("display-block");
-            filmBlock.innerHTML = `
-            <h2>${title}</h2>
-            <p><b>Director : ${director}</b></p>
-            <p><b>${characterData}</b></p>
-            <p><b>${speciesData}</b></p>
-            <p><b>${vehiclesData}</b></p>
-            `;
-            /*console.log("Film Title:", title);
-            console.log("Director:", director);
-            console.log("Opening Crawl:", opening);
-            console.log("Characters:", characterData);
-            console.log("Species:", speciesData);
-            console.log("Planets:", planetsData);
-            console.log("Starships:", starshipsData);
-            console.log("Vehicles:", vehiclesData);
-            console.log("-------------------"); 
-            filmsContainer.appendChild(filmBlock);
+            filmBlock.classList.add('character-block');
+            
+            const imageContainer = document.createElement("div");
+            imageContainer.classList.add("image-container");
+
+            const image = document.createElement("img");
+            image.src = `movies/${title}.jpeg`;
+            imageContainer.appendChild(image);
+
+            const filmName = document.createElement("h3");
+            filmName.innerHTML = `<h3 style='text-align:center'>${title}</h3>`;
+
+            filmBlock.appendChild(imageContainer);
+            filmBlock.appendChild(filmName);
+
+            filmsContainer.appendChild(filmBlock)
+
+
+            filmBlock.addEventListener("click", () => {
+                displayFilmInfo(filmUid);
+            }); 
+        
         }  
     }
     catch (error){
         console.error("Error fetching data:", error);
     }
-} */
+} 
 
+async function displayFilmInfo(){
+    try{
 
+    }catch (error) {
+        console.error("Error fetching data", error);
+    }
+}
