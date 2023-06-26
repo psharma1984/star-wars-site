@@ -10,7 +10,6 @@ async function fetchCharacters() {
       const response = await fetch(characterApi_url);
       const data = await response.json();
       const characters = data.results;
-      let characterNames = [];
   
       const charactersContainer = document.getElementById("characters-container");
       charactersContainer.innerHTML = '';
@@ -27,7 +26,6 @@ async function fetchCharacters() {
   
         const characterProperties = characterData.result.properties;
         const name = characterProperties.name;
-        characterNames.push(name);
   
         const characterBlock = document.createElement("div");
         characterBlock.classList.add("character-block");
@@ -36,7 +34,7 @@ async function fetchCharacters() {
         imageContainer.classList.add("image-container");
   
         const characterImage = document.createElement("img");
-        characterImage.src = `photos/${characterUid}.jpeg`;
+        characterImage.src = `people/${characterUid}.jpg`;
         imageContainer.appendChild(characterImage);
 
 
@@ -55,7 +53,6 @@ async function fetchCharacters() {
       });
   
       await Promise.all(characterDataPromises);
-      return characterNames;
     } catch (error) {
       console.error("Error fetching data: ", error);
       return [];
@@ -86,7 +83,7 @@ async function fetchCharacters() {
         imageContainer.classList.add("image-container");
 
         const characterImage = document.createElement("img");
-        characterImage.src = `photos/${characterUid}.jpeg`;
+        characterImage.src = `people/${characterUid}.jpg`;
         imageContainer.appendChild(characterImage);
         characterBlock.appendChild(imageContainer)
 
@@ -116,6 +113,7 @@ async function fetchCharacters() {
         for (const film of films) {
             const characters = film.properties.characters;
             const title = film.properties.title;
+            const filmUid = film.uid;
 
             const filmTitles = document.createElement("div");
             filmTitles.classList.add("film-container");
@@ -132,41 +130,21 @@ async function fetchCharacters() {
                 filmTitles.appendChild(filmTitle);            
             }   
             filmInformation.appendChild(filmTitles);
+            filmInformation.addEventListener("click", () => {
+                window.location.href = "movie.html?filmUid=" + encodeURIComponent(filmUid);
+            }); 
+            
         }
         filmElement.appendChild(filmInformation);
+        
         characterContainer.appendChild(filmElement);
+
+        
         
     } catch (error) {
       console.error("Error fetching film data:", error);
     }
   }
-
-
-async function displayCharacters(title){
-    try{
-        const response = await fetch(`${filmApi_url}?title=${encodeURIComponent(title)}`);
-        const data = await response.json();
-        const films = data.result;
-        if (films.length > 0){
-            //film found
-            const film = films[0];
-            const title = film.properties.title;
-            const director = film.properties.director;
-            const releaseDate = film.properties.release_date;
-            const characters = film.properties.characters;
-
-            //const characterData = await fetchCharacterData(characters); 
-
-
-
-
-
-        }
-    }catch (error) {
-        console.error("Error fetching film data:", error);
-    }
-}
-
 
 // Function to fetch movies.....
 async function fetchMovies(){
@@ -174,7 +152,6 @@ async function fetchMovies(){
         const response = await fetch(filmApi_url);   
         const data = await response.json();
         const films = data.result;
-        const filmUid = films.Uid;
 
         const headingContainer = document.getElementById("heading-container");
         headingContainer.innerHTML = '';        
@@ -184,6 +161,7 @@ async function fetchMovies(){
 
         for (const f of films){
             const title = f.properties.title;
+            const filmUid = f.uid;
            
             const filmBlock = document.createElement("div");
             filmBlock.classList.add('character-block');
@@ -205,7 +183,8 @@ async function fetchMovies(){
 
 
             filmBlock.addEventListener("click", () => {
-                displayFilmInfo(filmUid);
+                window.location.href = "movie.html?filmUid=" + encodeURIComponent(filmUid);
+                //displayFilmInfo(filmUid);
             }); 
         
         }  
@@ -215,9 +194,58 @@ async function fetchMovies(){
     }
 } 
 
-async function displayFilmInfo(){
+async function displayFilmInfo(filmUid){
     try{
+        const respone = await fetch(`${filmApi_url}/${filmUid}`);
+        const data = await respone.json();
+        const filmData = data.result;
+        const title = filmData.properties.title;
 
+        const headingContainer = document.getElementById("heading-container");
+        headingContainer.innerHTML = `<h1 style="text-align: center">${title.toUpperCase()}</h1>`;
+     
+        const filmImage = document.getElementById("filmImage");
+        filmImage.src = `movies/${title}.jpeg`;
+       
+        const filmPara = document.getElementById("filmPara");
+        filmPara.innerHTML = `<ul>
+        <li>Directed By : ${filmData.properties.director}</li>
+        <li>Released : ${filmData.properties.release_date} </li>
+        <li>Episode : ${filmData.properties.episode_id}</li>
+        </ul>`;
+        
+        const openingCrawl = document.getElementById("crawlOpening-container");
+        openingCrawl.innerHTML = `${filmData.properties.opening_crawl}`;
+
+        const castContainer = document.getElementById("cast");
+
+        const characters = filmData.properties.characters;
+        const charContainer = document.getElementById('char-container');
+        charContainer.parentNode.insertBefore(castContainer, charContainer);
+        castContainer.appendChild(charContainer);
+
+        
+
+        for(const c of characters){
+            const lastInteger = parseInt(c.match(/\d+$/)[0]);
+
+            const characterInfoContainer = document.createElement("div");
+            characterInfoContainer.classList.add("character-block");
+
+            const imageContainer = document.createElement("div");
+            imageContainer.classList.add("image-container");
+
+            const characterImage = document.createElement("img");
+            characterImage.alt = "No-Image";
+            characterImage.src = `people/${lastInteger}.jpg`;
+
+            imageContainer.appendChild(characterImage);
+            characterInfoContainer.appendChild(imageContainer);
+            charContainer.appendChild(characterInfoContainer);
+            characterInfoContainer.addEventListener("click", () => {
+                window.location.href = "movie.html?filmUid=" + encodeURIComponent(filmUid);
+            }); 
+        }
     }catch (error) {
         console.error("Error fetching data", error);
     }

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="script.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+        <link rel="stylesheet" href="style.css" />
+        <title>Star Wars Movie</title>
+    </head>
+    <body>
+        <script>
+            // Retrieve the filmUid from the URL query parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const filmUid = urlParams.get("filmUid");
+    
+            // Call the displayFilmInfo function with the filmUid
+            displayFilmInfo(filmUid);
+        </script>
+        <header> 
+        <h1 style="text-align: center;">Welcome to the Star Wars Universe</h1>
+        <div class="container">
+            <nav class="navbar bg-body-tertiary" data-bs-theme="dark">
+                <a class="navbar-brand" href="main.html" onclick="fetchCharacters()">CHARACTERS</a>   
+                <a class="navbar-brand" href="main.html" onclick="fetchMovies()">MOVIES</a>                                    
+            </nav>
+        </div>
+        </header>
+        
+        <main>
+            <div class="heading-container" id="heading-container"></div>
+            <div class="characters-container" id="film-container">
+                <div class="characters-container" id="filmInfo-container">
+                    <div class="character-block" id="filmDetail-container">
+                        <div class="image-container" id="filmImage-container">
+                            <img id="filmImage">
+                        </div>
+                        <p id="filmPara"></p>
+                    </div>
+                    <div class="display-block" id="crawlOpening-container"></div>
+                </div>
+
+                <div class="film-display" id="char-container">
+                    <div id="cast"><h1 style="text-align: center;">CAST</h1></div>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            2023 Star Wars Website. All rights reserved.
+        </footer>
+    </body>
+</html>
