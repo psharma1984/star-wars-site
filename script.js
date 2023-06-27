@@ -1,6 +1,7 @@
-const characterApi_url = "https://www.swapi.tech/api/people";
-const filmApi_url = "https://www.swapi.tech/api/films";
+const characterApi_url = "https://www.swapi.tech/api/people";  //people API
+const filmApi_url = "https://www.swapi.tech/api/films";         //movies API
 
+//Function to fetch characters with name and image
 async function fetchCharacters() {
     try {
       const response = await fetch(characterApi_url);
@@ -13,6 +14,7 @@ async function fetchCharacters() {
       const headingContainer = document.getElementById("heading-container");
       headingContainer.innerHTML = '';
   
+      //Get characterPromises
       const characterDataPromises = characters.map(async (character) => {
         const characterUrl = character.url;
         const characterUid = character.uid;
@@ -23,10 +25,11 @@ async function fetchCharacters() {
         const characterProperties = characterData.result.properties;
         const name = characterProperties.name;
   
+        // The individual character display box
         const characterBlock = document.createElement("div");
         characterBlock.classList.add("character-block");
   
-        const imageContainer = document.createElement("div");
+        const imageContainer = document.createElement("div");       //image container that will contain image
         imageContainer.classList.add("image-container");
   
         const characterImage = document.createElement("img");
@@ -34,7 +37,7 @@ async function fetchCharacters() {
         imageContainer.appendChild(characterImage);
 
 
-        const characterName = document.createElement("h2");
+        const characterName = document.createElement("h2");         //label of the image
         characterName.innerHTML = `<h2 style="text-align:center">${name}</h2>`;
   
         characterBlock.appendChild(imageContainer);
@@ -42,29 +45,33 @@ async function fetchCharacters() {
   
         charactersContainer.appendChild(characterBlock);
 
+        //Character Box on-click event
         characterBlock.addEventListener("click", () => {
             window.location.href = "people.html?characterUid=" + encodeURIComponent(characterUid);
         });         
       });  
-      await Promise.all(characterDataPromises);
+      await Promise.all(characterDataPromises);             //loads all the promises and then displays
     } catch (error) {
       console.error("Error fetching data: ", error);
       return [];
     }
   }
   
+  // Function to display detailed character info on people.html
   async function displayCharacterInfo(characterUid) {
     try {
 
-        const characterResponse = await fetch(`${characterApi_url}/${characterUid}`);
+        const characterResponse = await fetch(`${characterApi_url}/${characterUid}`);       //individual character API call
         const characterData = await characterResponse.json();
         const character = characterData.result;
         const name = character.properties.name;
 
+        //fetch film data 
         const filmResponse = await fetch(filmApi_url);
         const filmData = await filmResponse.json();
         const films = filmData.result;
 
+        //Page Heading to display Characters name
         const headingContainer = document.getElementById("heading-container");
         headingContainer.innerHTML = `<h1 style="text-align: center">${name.toUpperCase()}</h1>`;
      
@@ -84,14 +91,16 @@ async function fetchCharacters() {
         
         const filmInformation = document.getElementById("filmInformation");
 
+        //loop to find the films a character did
         for (const film of films) {
-            const characters = film.properties.characters;
+            const characters = film.properties.characters;      //character API's for a particular film
             const title = film.properties.title;
             const filmUid = film.uid;
 
             const filmTitles = document.createElement("div");
             filmTitles.classList.add("film-container");
 
+            //Finds if passed character UID exists for this film
             if(characters.includes(characterApi_url + `/${characterUid}`)) {
                 const filmPoster = document.createElement("div");
                 filmPoster.classList.add("image-container");
@@ -103,7 +112,9 @@ async function fetchCharacters() {
                 filmTitles.appendChild(filmPoster);
                 filmTitles.appendChild(filmTitle);            
             }   
-            filmInformation.appendChild(filmTitles);
+            filmInformation.appendChild(filmTitles);   
+
+            //Event Listener for this film display box
             filmTitles.addEventListener("click", () => {
                 window.location.href = "movie.html?filmUid=" + encodeURIComponent(filmUid);
             });             
@@ -121,11 +132,12 @@ async function fetchMovies(){
         const films = data.result;
 
         const headingContainer = document.getElementById("heading-container");
-        headingContainer.innerHTML = '';        
+        headingContainer.innerHTML = '';                                        //set this empty to display new info on main.html
         
         const filmsContainer = document.getElementById("characters-container");
-        filmsContainer.innerHTML = '';       
+        filmsContainer.innerHTML = '';                                  //set empty to display fresh info on main.html
 
+        //Loop to create film display boxes
         for (const f of films){
             const title = f.properties.title;
             const filmUid = f.uid;
@@ -148,7 +160,8 @@ async function fetchMovies(){
 
             filmsContainer.appendChild(filmBlock)
 
-            filmsContainer.addEventListener("click", () => {
+            //Event Listener for this particular film display box
+            filmBlock.addEventListener("click", () => {
                 window.location.href = "movie.html?filmUid=" + encodeURIComponent(filmUid);
             }); 
         
@@ -159,17 +172,19 @@ async function fetchMovies(){
     }
 } 
 
+
+//Function to display detail info for a film on movie.html
 async function displayFilmInfo(filmUid){
     try{
-        const respone = await fetch(`${filmApi_url}/${filmUid}`);
+        const respone = await fetch(`${filmApi_url}/${filmUid}`);       //fetch particular film API
         const data = await respone.json();
         const filmData = data.result;
-        const title = filmData.properties.title;
+        const title = filmData.properties.title;                        //film Title
 
         const headingContainer = document.getElementById("heading-container");
-        headingContainer.innerHTML = `<h1 style="text-align: center">${title.toUpperCase()}</h1>`;
+        headingContainer.innerHTML = `<h1 style="text-align: center">${title.toUpperCase()}</h1>`;    //set page heading to film title
      
-        const filmContainer = document.getElementById("film-container");
+        const filmContainer = document.getElementById("film-container");  
         const filmImage = document.getElementById("filmImage");
         filmImage.src = `movies/${title}.jpeg`;
        
@@ -185,12 +200,28 @@ async function displayFilmInfo(filmUid){
 
         const castContainer = document.getElementById("cast");
 
-        const characters = filmData.properties.characters;
         const charContainer = document.getElementById('char-container');
         charContainer.parentNode.insertBefore(castContainer, charContainer);
         castContainer.appendChild(charContainer);
-      
 
+        //Cast of the film
+        const characters = filmData.properties.characters;
+        const namedict = {};        // collects the name of each character
+        const characterRequests = characters.map(async (c) => {
+            const lastInteger = parseInt(c.match(/\d+$/)[0]);
+            const characterResponse = await fetch(`${characterApi_url}/${lastInteger}`);
+            const characterData = await characterResponse.json();
+            return {lastInteger,name:characterData.result.properties.name};
+        });
+        const characterResults = await Promise.all(characterRequests);   
+
+        //Populate the dictionary
+        for (const result of characterResults) {
+            const { lastInteger, name } = result;
+            namedict[lastInteger] = name;
+          }
+
+        //Cast display blocks
         for(const c of characters){
             const lastInteger = parseInt(c.match(/\d+$/)[0]);
 
@@ -203,9 +234,13 @@ async function displayFilmInfo(filmUid){
             const characterImage = document.createElement("img");
             characterImage.alt = "No-Image";
             characterImage.src = `people/${lastInteger}.jpg`;
-
             imageContainer.appendChild(characterImage);
+
+            const characterName = document.createElement("span");
+            characterName.innerHTML = `<span style="text-align:center"><b>${namedict[lastInteger].toUpperCase()}</b></span>`;
             characterInfoContainer.appendChild(imageContainer);
+            characterInfoContainer.appendChild(characterName);
+            
             charContainer.appendChild(characterInfoContainer);
             characterInfoContainer.addEventListener("click", () => {
                 window.location.href = "people.html?characterUid=" + encodeURIComponent(lastInteger);
