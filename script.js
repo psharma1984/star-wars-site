@@ -1,9 +1,5 @@
 const characterApi_url = "https://www.swapi.tech/api/people";
 const filmApi_url = "https://www.swapi.tech/api/films";
-const speciesApi_url = "https://www.swapi.tech/api/species";
-const starshipsApi_url = "https://www.swapi.tech/api/starships";
-const vehiclesApi_url = "https://www.swapi.tech/api/vehicles";
-const planetsApi_url = "https://www.swapi.tech/api/planets";
 
 async function fetchCharacters() {
     try {
@@ -47,11 +43,9 @@ async function fetchCharacters() {
         charactersContainer.appendChild(characterBlock);
 
         characterBlock.addEventListener("click", () => {
-            displayCharacterInfo(characterUid,name);
-        }); 
-        
-      });
-  
+            window.location.href = "people.html?characterUid=" + encodeURIComponent(characterUid);
+        });         
+      });  
       await Promise.all(characterDataPromises);
     } catch (error) {
       console.error("Error fetching data: ", error);
@@ -59,12 +53,13 @@ async function fetchCharacters() {
     }
   }
   
-  async function displayCharacterInfo(characterUid, name) {
+  async function displayCharacterInfo(characterUid) {
     try {
 
         const characterResponse = await fetch(`${characterApi_url}/${characterUid}`);
         const characterData = await characterResponse.json();
         const character = characterData.result;
+        const name = character.properties.name;
 
         const filmResponse = await fetch(filmApi_url);
         const filmData = await filmResponse.json();
@@ -73,21 +68,10 @@ async function fetchCharacters() {
         const headingContainer = document.getElementById("heading-container");
         headingContainer.innerHTML = `<h1 style="text-align: center">${name.toUpperCase()}</h1>`;
      
-        const characterContainer = document.getElementById("characters-container");
-        characterContainer.innerHTML = ""; 
-
-        const characterBlock = document.createElement("div");
-        characterBlock.classList.add("character-block");
-
-        const imageContainer = document.createElement("div");
-        imageContainer.classList.add("image-container");
-
-        const characterImage = document.createElement("img");
+        const characterImage = document.getElementById("characterImage");
         characterImage.src = `people/${characterUid}.jpg`;
-        imageContainer.appendChild(characterImage);
-        characterBlock.appendChild(imageContainer)
 
-        const characterInfo = document.createElement("div");
+        const characterInfo = document.getElementById("characterInfo");
         characterInfo.innerHTML = `
         <p>Birth Year : ${character.properties.birth_year}</p>
         <p>Height : ${character.properties.height}m</p>
@@ -97,18 +81,8 @@ async function fetchCharacters() {
         <p>Skin Color : ${character.properties.skin_color}</p>
         <p>Eye Color : ${character.properties.eye_color}</p>
         `;
-        characterBlock.appendChild(characterInfo);
-        characterContainer.appendChild(characterBlock);
-
-        const filmElement = document.createElement("div");
-        filmElement.classList.add("display-block");
-
-        const filmHeading = document.createElement("h2");
-        filmHeading.textContent= "FILMOGRAPHY";
-        filmElement.appendChild(filmHeading); 
-
-        const filmInformation = document.createElement("div");
-        filmInformation.classList.add("characters-container");
+        
+        const filmInformation = document.getElementById("filmInformation");
 
         for (const film of films) {
             const characters = film.properties.characters;
@@ -130,17 +104,10 @@ async function fetchCharacters() {
                 filmTitles.appendChild(filmTitle);            
             }   
             filmInformation.appendChild(filmTitles);
-            filmInformation.addEventListener("click", () => {
+            filmTitles.addEventListener("click", () => {
                 window.location.href = "movie.html?filmUid=" + encodeURIComponent(filmUid);
-            }); 
-            
+            });             
         }
-        filmElement.appendChild(filmInformation);
-        
-        characterContainer.appendChild(filmElement);
-
-        
-        
     } catch (error) {
       console.error("Error fetching film data:", error);
     }
@@ -181,10 +148,8 @@ async function fetchMovies(){
 
             filmsContainer.appendChild(filmBlock)
 
-
-            filmBlock.addEventListener("click", () => {
+            filmsContainer.addEventListener("click", () => {
                 window.location.href = "movie.html?filmUid=" + encodeURIComponent(filmUid);
-                //displayFilmInfo(filmUid);
             }); 
         
         }  
@@ -204,6 +169,7 @@ async function displayFilmInfo(filmUid){
         const headingContainer = document.getElementById("heading-container");
         headingContainer.innerHTML = `<h1 style="text-align: center">${title.toUpperCase()}</h1>`;
      
+        const filmContainer = document.getElementById("film-container");
         const filmImage = document.getElementById("filmImage");
         filmImage.src = `movies/${title}.jpeg`;
        
@@ -223,8 +189,7 @@ async function displayFilmInfo(filmUid){
         const charContainer = document.getElementById('char-container');
         charContainer.parentNode.insertBefore(castContainer, charContainer);
         castContainer.appendChild(charContainer);
-
-        
+      
 
         for(const c of characters){
             const lastInteger = parseInt(c.match(/\d+$/)[0]);
@@ -243,7 +208,7 @@ async function displayFilmInfo(filmUid){
             characterInfoContainer.appendChild(imageContainer);
             charContainer.appendChild(characterInfoContainer);
             characterInfoContainer.addEventListener("click", () => {
-                window.location.href = "movie.html?filmUid=" + encodeURIComponent(filmUid);
+                window.location.href = "people.html?characterUid=" + encodeURIComponent(lastInteger);
             }); 
         }
     }catch (error) {
