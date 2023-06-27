@@ -117,8 +117,14 @@ async function fetchCharacters() {
             //Event Listener for this film display box
             filmTitles.addEventListener("click", () => {
                 window.location.href = "movie.html?filmUid=" + encodeURIComponent(filmUid);
-            });             
+            });   
+            //Back Button on movie.html
+            const backButton = document.getElementById("backButton");
+            backButton.addEventListener("click", () => {
+            window.history.back();
+            });          
         }
+        
     } catch (error) {
       console.error("Error fetching film data:", error);
     }
@@ -245,6 +251,11 @@ async function displayFilmInfo(filmUid){
             characterInfoContainer.addEventListener("click", () => {
                 window.location.href = "people.html?characterUid=" + encodeURIComponent(lastInteger);
             }); 
+            //Back Button on movie.html
+            const backButton = document.getElementById("backButton");
+            backButton.addEventListener("click", () => {
+            window.history.back();
+            });
         }
     }catch (error) {
         console.error("Error fetching data", error);
