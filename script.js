@@ -1,10 +1,12 @@
 const characterApi_url = "https://www.swapi.tech/api/people";  //people API
 const filmApi_url = "https://www.swapi.tech/api/films";         //movies API
 
+let nextPageUrl = null;
+
 //Function to fetch characters with name and image
 async function fetchCharacters() {
     try {
-      const response = await fetch(characterApi_url);
+      const response = await fetch(nextPageUrl || characterApi_url);
       const data = await response.json();
       const characters = data.results;
   
@@ -50,13 +52,24 @@ async function fetchCharacters() {
             window.location.href = "people.html?characterUid=" + encodeURIComponent(characterUid);
         });         
       });  
-      await Promise.all(characterDataPromises);             //loads all the promises and then displays
+      await Promise.all(characterDataPromises);  
+
+      // paginate more characters using next property
+      nextPageUrl = data.next;
+      const loadMoreButton = document.getElementById("loadMore");
+      if (nextPageUrl) {
+        console.log("Load more button should be displayed");
+        console.log(loadMoreButton);
+        loadMoreButton.style.display = 'block';
+      } else {
+        loadMoreButton.style.display = 'none';
+      }
     } catch (error) {
       console.error("Error fetching data: ", error);
-      return [];
     }
   }
-  
+
+
   // Function to display detailed character info on people.html
   async function displayCharacterInfo(characterUid) {
     try {
@@ -118,11 +131,7 @@ async function fetchCharacters() {
             filmTitles.addEventListener("click", () => {
                 window.location.href = "movie.html?filmUid=" + encodeURIComponent(filmUid);
             });   
-            //Back Button on movie.html
-            const backButton = document.getElementById("backButton");
-            backButton.addEventListener("click", () => {
-            window.history.back();
-            });          
+                      
         }
         
     } catch (error) {
