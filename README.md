@@ -5,4 +5,4 @@ Quick Setup
 2. Open the file "main.html" in the web browser.
 
 Site Navigation
-The Site displays all the characters and the movies fetched from the Star Wars API. You can access these using link CHARACTERS or MOVIES in the navigation bar. Clicking on each character or movie displays further information about them. The pages displayed hence provided additional navigation related to a character or a movie.
+1. The Site displays all the characters and the movies fetched from the Star Wars API. You can access these using link CHARACTERS or MOVIES in the navigation bar. Clicking on each character or movie displays further information about them. The pages displayed hence provided additional navigation related to a character or a movie.
