@@ -2,26 +2,25 @@ const characterApi_url = "https://www.swapi.tech/api/people";  //people API
 const filmApi_url = "https://www.swapi.tech/api/films";         //movies API
 
 let nextPageUrl = null;
+let currentPage = 1;
 
 function generatePaginationButtons(totalPages,nextPageUrl) {
     const paginationContainer = document.getElementById("pagination-container");
     paginationContainer.innerHTML = "";
-    let currentPage = 1;
     
     for (let i = 1; i <= totalPages; i++) {
       const button = document.createElement("button");
       button.textContent = i;
-      button.classList.add("btn");
+      button.classList.add("btn","btn-link");
       
-      if(i==1){
-        button.disabled = true;
+      if (i === currentPage) {
+        button.classList.remove("btn-link");
+        button.classList.add("btn", "btn-light");
       }
       button.addEventListener("click", () => {
-        currentPage = i;
-        button.classList.add("btn");
+        currentPage = i;        
         fetchCharacters(nextPageUrl);
-      });
-  
+      });  
       paginationContainer.appendChild(button);
     }
   }
