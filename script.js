@@ -80,18 +80,8 @@ async function fetchCharacters() {
 
       const totalCharacters = data.total_records;
       const totalPages = Math.ceil(totalCharacters/10);
-      console.log(totalPages);
       generatePaginationButtons(totalPages,nextPageUrl);
-      // paginate more characters using next property
-      /*nextPageUrl = data.next;
-      const loadMoreButton = document.getElementById("loadMore");
-      if (nextPageUrl) {
-        console.log("Load more button should be displayed");
-        console.log(loadMoreButton);
-        loadMoreButton.style.display = 'block';
-      } else {
-        loadMoreButton.style.display = 'none';
-      }*/
+      
     } catch (error) {
       console.error("Error fetching data: ", error);
     }
