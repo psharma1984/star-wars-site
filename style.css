@@ -127,15 +127,11 @@ a:hover{
 .pagination-container {
     text-align: right;
     margin-top: 10px;
+    color: red;
   }
   
   .pagination-button {
     margin: 0 5px;
     padding: 5px 10px;
-  }
-  .first-pagination-button{
-    margin: 0 5px;
-    padding: 5px 10px;
-    pointer-events: none;
-    user-select: none;
+    color : white;
   }

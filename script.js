@@ -61,7 +61,6 @@ async function fetchCharacters() {
         characterImage.src = `people/${characterUid}.jpg`;
         imageContainer.appendChild(characterImage);
 
-
         const characterName = document.createElement("h2");         //label of the image
         characterName.innerHTML = `<h2 style="text-align:center">${name}</h2>`;
   
@@ -69,7 +68,6 @@ async function fetchCharacters() {
         characterBlock.appendChild(characterName);
   
         charactersContainer.appendChild(characterBlock);
-
         //Character Box on-click event
         characterBlock.addEventListener("click", () => {
             window.location.href = "people.html?characterUid=" + encodeURIComponent(characterUid);
@@ -105,6 +103,7 @@ async function fetchCharacters() {
         //Page Heading to display Characters name
         const headingContainer = document.getElementById("heading-container");
         headingContainer.innerHTML = `<h1 style="text-align: center">${name.toUpperCase()}</h1>`;
+        showLoading();
      
         const characterImage = document.getElementById("characterImage");
         characterImage.src = `people/${characterUid}.jpg`;
@@ -144,13 +143,18 @@ async function fetchCharacters() {
                 filmTitles.appendChild(filmTitle);            
             }   
             filmInformation.appendChild(filmTitles);   
-
+            hideLoading();
             //Event Listener for this film display box
             filmTitles.addEventListener("click", () => {
                 window.location.href = "movie.html?filmUid=" + encodeURIComponent(filmUid);
             });   
                       
         }
+        //Back Button on people.html
+        const backButton = document.getElementById("backButton");
+        backButton.addEventListener("click", () => {
+        window.history.back();
+        });
         
     } catch (error) {
       console.error("Error fetching film data:", error);
@@ -236,6 +240,7 @@ async function displayFilmInfo(filmUid){
         const charContainer = document.getElementById('char-container');
         charContainer.parentNode.insertBefore(castContainer, charContainer);
         castContainer.appendChild(charContainer);
+        showLoading();
 
         //Cast of the film
         const characters = filmData.properties.characters;
@@ -253,7 +258,6 @@ async function displayFilmInfo(filmUid){
             const { lastInteger, name } = result;
             namedict[lastInteger] = name;
           }
-
         //Cast display blocks
         for(const c of characters){
             const lastInteger = parseInt(c.match(/\d+$/)[0]);
@@ -273,7 +277,7 @@ async function displayFilmInfo(filmUid){
             characterName.innerHTML = `<span style="text-align:center"><b>${namedict[lastInteger].toUpperCase()}</b></span>`;
             characterInfoContainer.appendChild(imageContainer);
             characterInfoContainer.appendChild(characterName);
-            
+            hideLoading();
             charContainer.appendChild(characterInfoContainer);
             characterInfoContainer.addEventListener("click", () => {
                 window.location.href = "people.html?characterUid=" + encodeURIComponent(lastInteger);
@@ -287,4 +291,14 @@ async function displayFilmInfo(filmUid){
     }catch (error) {
         console.error("Error fetching data", error);
     }
+}
+
+function showLoading() {
+    const loadingElement = document.getElementById("loading");
+    loadingElement.style.display = "block";
+  }
+
+function hideLoading() {
+    const loadingElement = document.getElementById("loading");
+    loadingElement.style.display = "none";
 }
