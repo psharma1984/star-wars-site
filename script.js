@@ -60,8 +60,8 @@ async function fetchCharacters() {
         characterImage.src = `people/${characterUid}.jpg`;
         imageContainer.appendChild(characterImage);
 
-        const characterName = document.createElement("h2");         //label of the image
-        characterName.innerHTML = `<h2 style="text-align:center">${name}</h2>`;
+        const characterName = document.createElement("span");         //label of the image
+        characterName.innerHTML = `<span style="text-align:center"><b>${name}</b></span>`;
   
         characterBlock.appendChild(imageContainer);
         characterBlock.appendChild(characterName);
